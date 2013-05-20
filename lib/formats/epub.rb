@@ -427,7 +427,9 @@ class Peregrin::Epub
 
         doc = Nokogiri::HTML::Document.parse(cmpt.contents)
         html = root_to_xhtml(doc.root)
-        File.open(working_dir(OEBPS, cmpt.src), 'w') { |f| f.write(html) }
+	dest_path = working_dir(OEBPS, cmpt.src)
+	FileUtils.mkdir_p(File.dirname(dest_path))
+        File.open(working_dir(OEBPS, cmpt.src), 'w+') { |f| f.write(html) }
       }
 
       # Other components (@book.resources)
