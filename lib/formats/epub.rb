@@ -427,8 +427,8 @@ class Peregrin::Epub
 
         doc = Nokogiri::HTML::Document.parse(cmpt.contents)
         html = root_to_xhtml(doc.root)
-	dest_path = working_dir(OEBPS, cmpt.src)
-	FileUtils.mkdir_p(File.dirname(dest_path))
+	      dest_path = working_dir(OEBPS, cmpt.src)
+	      FileUtils.mkdir_p(File.dirname(dest_path))
         File.open(working_dir(OEBPS, cmpt.src), 'w+') { |f| f.write(html) }
       }
 
@@ -467,7 +467,8 @@ class Peregrin::Epub
               'source',
               'relation',
               'coverage',
-              'rights'
+              'rights',
+	      'type'
             ].each { |dc|
               if val = @book.property_for(dc)
                 val.split(/\n/).each { |v|
