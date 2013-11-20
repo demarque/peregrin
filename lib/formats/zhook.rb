@@ -15,20 +15,20 @@ class Peregrin::Zhook
     raise FileNotFound.new(path)  unless File.file?(path)
     raise WrongExtension.new(path)  unless File.extname(path) == FILE_EXT
     begin
-      zf = Zip::Archive.open(path)
+      zf = Zip::File.open(path)
     rescue
       raise NotAZipArchive.new(path)
     end
 
-    unless zf.find(INDEX_PATH)
+    unless zf.find_entry(INDEX_PATH)
       raise MissingIndexHTML.new(path)
     end
 
-    unless zf.find(COVER_PATH)
+    unless zf.find_entry(COVER_PATH)
       raise MissingCoverPNG.new(path)
     end
 
-    doc = Nokogiri::HTML::Document.parse(zf.content(INDEX_PATH), nil, 'UTF-8')
+    doc = Nokogiri::HTML::Document.parse(zf.read(INDEX_PATH), nil, 'UTF-8')
     raise IndexHTMLRootHasId.new(path)  if doc.root['id']
 
   ensure
@@ -41,15 +41,15 @@ class Peregrin::Zhook
   def self.read(path)
     validate(path)
     book = Peregrin::Book.new
-    Zip::Archive.open(path) { |zf|
-      book.add_component(INDEX_PATH, zf.content(INDEX_PATH))
+    Zip::File.open(path) { |zf|
+      book.add_component(INDEX_PATH, zf.read(INDEX_PATH))
       zf.each { |entry|
         ze = entry.name
         book.add_resource(ze)  unless ze == INDEX_PATH || entry.directory?
       }
     }
     book.read_resource_proc = lambda { |resource|
-      Zip::Archive.open(path) { |zipfile| zipfile.content(resource.src) }
+      Zip::File.open(path) { |zipfile| zipfile.read(resource.src) }
     }
 
     extract_properties_from_index(book)
@@ -82,13 +82,13 @@ class Peregrin::Zhook
   #
   def write(path)
     File.unlink(path)  if File.exists?(path)
-    Zip::Archive.open(path, Zip::CREATE) { |zipfile|
-      zipfile.add_buffer(INDEX_PATH, htmlize(index))
+    Zip::File.open(path, Zip::File::CREATE) { |zipfile|
+      zipfile.get_output_stream(INDEX_PATH) { |f| f.write(htmlize(index)) }
       @book.resources.each { |resource|
-        zipfile.add_buffer(resource.src, @book.read_resource(resource))
+        zipfile.get_output_stream(resource.src) { |f| f.write(@book.read_resource(resource)) }
       }
       unless @book.cover.src == COVER_PATH
-        zipfile.add_buffer(COVER_PATH, to_png_data(@book.cover))
+        zipfile.get_output_stream(COVER_PATH) { |f| f.write(to_png_data(@book.cover)) }
       end
     }
     path

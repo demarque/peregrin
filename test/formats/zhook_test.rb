@@ -110,7 +110,7 @@ class Peregrin::Tests::ZhookTest < Test::Unit::TestCase
       "index.html",
       %Q`
         <html><head><title>Index</title>
-        <meta http-equiv="Content-Type" content="text/html;charset=US-ASCII">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         </head><body>
         <p>A para</p></body></html>
       `
@@ -133,7 +133,7 @@ class Peregrin::Tests::ZhookTest < Test::Unit::TestCase
         <!DOCTYPE html>
         <html><head>
           <title>Index</title>
-          <meta http-equiv="Content-Type" content="text/html;charset=US-ASCII">
+          <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
           <link rel="stylesheet" href="main.css">
         </head><body>
         <article>
@@ -158,7 +158,7 @@ class Peregrin::Tests::ZhookTest < Test::Unit::TestCase
     book.add_component(
       "index.html",
       "<html><head><title>Foo</title>" +
-      "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=US-ASCII\">" +
+      "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">" +
       "</head><body><p>Foo</p></body></html>"
     )
     book.add_property("title", "Foo")
@@ -168,7 +168,7 @@ class Peregrin::Tests::ZhookTest < Test::Unit::TestCase
       whitewash(%Q`
         <!DOCTYPE html>
         <html><head><title>Foo</title>
-        <meta http-equiv="Content-Type" content="text/html;charset=US-ASCII">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <meta name="title" content="Foo">
         <meta name="creator" content="Peregrin Took">
         </head><body><p>Foo</p></body></html>
