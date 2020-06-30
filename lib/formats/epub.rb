@@ -596,7 +596,12 @@ class Peregrin::Epub
         elem['class'] = "#{k.nil? || k.empty? ? '' : "#{k} " }#{elem.name}"
         elem.name = "div"
       }
-      root.remove_attribute('xmlns')
+      # https://github.com/sparklemotion/nokogiri/issues/339
+      # to_xhtml generates its own attributes, duplicating the existing ones,
+      # and making the epub unreadable on some players.
+      # So we remove them manually.
+      root.xpath('//@lang').remove
+      root.xpath('//@xmlns').remove
       root.to_xhtml(:indent => 2, :encoding => root.document.encoding)
     end
 
